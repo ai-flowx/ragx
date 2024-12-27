@@ -1,0 +1,43 @@
+[package]
+name = "ragx"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.83.0"
+authors = ["Jia Jia <angersax@sina.com>"]
+include = [
+    "src/**/*",
+    "Cargo.toml",
+    "README.md"
+]
+description = "AI RAG"
+repository = "https://github.com/ai-flowx/ragx"
+documentation = "https://github.com/ai-flowx/ragx"
+homepage = "https://github.com/ai-flowx/ragx"
+keywords = ["ai", "rag"]
+categories = ["database"]
+license = "MIT"
+readme = "README.md"
+
+[[bin]]
+name = "ragx"
+path = "src/main.rs"
+
+[profile.release]
+strip = "debuginfo"
+
+[dependencies]
+axum = "0.7"
+clap = "4.5"
+moka = { version = "0.12", features = ["future"] }
+openssl = { version = "0.10", features = ["vendored"] }
+petgraph = "0.6"
+serde = "1.0"
+serde_derive = "1.0"
+serde_yaml = "0.9"
+tree-sitter-graph = "0.12"
+walkdir = "2.5"
+
+[build-dependencies]
+
+[badges]
+maintenance = { status = "actively-developed" }

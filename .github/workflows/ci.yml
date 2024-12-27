@@ -1,0 +1,44 @@
+---
+name: "ci"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  RUST_BACKTRACE: full
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Install
+        run: |
+          rustup update --no-self-update stable
+          rustup component add clippy
+          rustup component add rustfmt
+          cargo install cargo-hack --debug
+      - name: Run
+        run: make lint
+        continue-on-error: false
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Install
+        run: |
+          rustup update --no-self-update stable
+      - name: Run
+        run: make test
+        continue-on-error: false
