@@ -2,12 +2,15 @@
 name: "release"
 
 on:
-  push:
-    tags:
-      - v*
+  release:
+    types:
+      - created
+
+env:
+  TARGET_NAME: ragx
 
 jobs:
-  release:
+  linux-windows:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,9 +24,60 @@ jobs:
       - name: Install
         run: make install
       - name: Build
-        run: make build
+        run: type=all make build
+      - name: Zip
+        run: zip -j ${{ env.TARGET_NAME }}-linux-x86_64.zip target/x86_64-unknown-linux-gnu/release/${{ env.TARGET_NAME }}
+      - name: Zip
+        run: zip -j ${{ env.TARGET_NAME }}-windows-x86_64.zip target/x86_64-pc-windows-gnu/release/${{ env.TARGET_NAME }}.exe
+      - name: Shasum
+        run: |
+          shasum -a 256 ${{ env.TARGET_NAME }}-linux-x86_64.zip > ${{ env.TARGET_NAME }}-linux-x86_64.zip.sha256
+          shasum -a 256 ${{ env.TARGET_NAME }}-windows-x86_64.zip > ${{ env.TARGET_NAME }}-windows-x86_64.zip.sha256
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: alexellis/upload-assets@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.AI_FLOWX_TOKEN }}
         with:
-          name: ${{ github.event.repository.name }}
-          path: target/x86_64-unknown-linux-gnu/release/${{ github.event.repository.name }}
+          asset_paths: '["${{ env.TARGET_NAME }}-linux-x86_64.zip", "${{ env.TARGET_NAME }}-linux-x86_64.zip.sha256", "${{ env.TARGET_NAME }}-windows-x86_64.zip", "${{ env.TARGET_NAME }}-windows-x86_64.zip.sha256"]'
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+      - name: Build
+        run: cargo build --release --target=x86_64-apple-darwin --target=aarch64-apple-darwin
+      - name: Zip
+        run: zip -j ${{ env.TARGET_NAME }}-darwin-x86_64.zip target/x86_64-apple-darwin/release/${{ env.TARGET_NAME }}
+      - name: Zip
+        run: zip -j ${{ env.TARGET_NAME }}-darwin-aarch64.zip target/aarch64-apple-darwin/release/${{ env.TARGET_NAME }}
+      - name: Shasum
+        run: |
+          shasum -a 256 ${{ env.TARGET_NAME }}-darwin-x86_64.zip > ${{ env.TARGET_NAME }}-darwin-x86_64.zip.sha256
+          shasum -a 256 ${{ env.TARGET_NAME }}-darwin-aarch64.zip > ${{ env.TARGET_NAME }}-darwin-aarch64.zip.sha256
+      - name: Upload
+        uses: alexellis/upload-assets@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.AI_FLOWX_TOKEN }}
+        with:
+          asset_paths: '["${{ env.TARGET_NAME }}-darwin-x86_64.zip", "${{ env.TARGET_NAME }}-darwin-x86_64.zip.sha256", "${{ env.TARGET_NAME }}-darwin-aarch64.zip", "${{ env.TARGET_NAME }}-darwin-aarch64.zip.sha256"]'
+  crates:
+    runs-on: ubuntu-latest
+    needs: [linux-windows, macos]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: katyo/publish-crates@v2
+        with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
