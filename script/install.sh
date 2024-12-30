@@ -21,14 +21,19 @@ rustup component add rustfmt
 sudo apt update -y
 sudo apt install -y upx
 
-# Install for Windows
+# Install for android
+# rustc --print target-list
+cargo install cargo-ndk
+rustup target add aarch64-linux-android
+
+# Install for linux
+# rustc --print target-list
+rustup target add x86_64-unknown-linux-gnu
+rustup toolchain install --force-non-host stable-x86_64-unknown-linux-gnu
+
+# Install for windows
 # rustc --print target-list
 sudo apt update -y
 sudo apt install -y mingw-w64
 rustup target add x86_64-pc-windows-gnu
 rustup toolchain install --force-non-host stable-x86_64-pc-windows-gnu
-
-# Install for Linux
-# rustc --print target-list
-rustup target add x86_64-unknown-linux-gnu
-rustup toolchain install --force-non-host stable-x86_64-unknown-linux-gnu
