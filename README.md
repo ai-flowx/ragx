@@ -118,6 +118,7 @@ Project License can be found [here](LICENSE).
 
 - [aliyun-graphrag](https://developer.aliyun.com/article/1540097)
 - [codegraphrag](https://mp.weixin.qq.com/s/hYJsWDkh6GnM1xqpg4gnXw)
+- [ragflow](https://github.com/infiniflow/ragflow)
 - [tree-sitter-graph](https://github.com/tree-sitter/tree-sitter-graph)
 - [vanna](https://github.com/vanna-ai/vanna)
 
