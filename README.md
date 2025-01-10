@@ -117,6 +117,7 @@ Project License can be found [here](LICENSE).
 - [mem0](https://github.com/mem0ai/mem0)
 - [memgraph](https://github.com/memgraph/memgraph)
 - [zep](https://www.getzep.com/)
+- [zero-copy](https://github.com/tokio-rs/bytes)
 
 ### RAG
 
